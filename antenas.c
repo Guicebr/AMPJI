@@ -177,6 +177,21 @@ int main(int nargs, char ** vargs){
 	MPI_Datatype MPI_Antena;
 	MPI_contiguous(2, MPI_INT, &MPI_Antena);
 	MPI_Type_commit(&MPI_Antena);
+	
+	Antena antena;
+	
+	// 3.1 direcciones de los campos
+	MPI_AINT address_antena;
+	MPI_Aint address_y;
+	MPI_Aint address_x;
+	
+	MPI_Get_address(&antena, &address_antena);
+	MPI_Get_address(&antena.y, &address_y);
+	MPI_Get_address(&antena.x, &address_x);
+	
+	// 4.2 Calculo de los desplazamientos
+	MPI_Aint displ_point = address_y - address_antena;
+	MPI_Aint displ_point = address_x - address_y;
 
 
 	//
@@ -184,6 +199,8 @@ int main(int nargs, char ** vargs){
 	//
 
 	// Comprobar número de argumentos
+	if (rank == 0)
+	{
 	if(nargs < 7){
 		fprintf(stderr,"Uso: %s rows cols distMax nAntenas x0 y0 [x1 y1, ...]\n",vargs[0]);
 		return -1;
@@ -244,6 +261,7 @@ int main(int nargs, char ** vargs){
 	// Colocar las antenas iniciales
 	for(i=0; i<nAntenas; i++){
 		actualizar(mapa,rows,cols,antenas[i]);
+	}
 	}
 
 	// Debug
