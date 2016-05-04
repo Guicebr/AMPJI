@@ -4,7 +4,7 @@
  * Colocación de antenas
  * Versión secuencial
  *
- * @author alberto
+ * @author Javier
  */
 
 
