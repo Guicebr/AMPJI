@@ -2,9 +2,10 @@
  * Computación Paralela (curso 1516)
  *
  * Colocación de antenas
- * Versión secuencial
+ * Versión MPI
  *
- * @author Pepe
+ * @author Guillermo Cebrian
+ * @author Alberto Gil
  * 
  */
 
