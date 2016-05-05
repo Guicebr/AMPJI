@@ -273,7 +273,11 @@ int main(int nargs, char ** vargs){
 	for(i=0; i<nAntenas; i++){
 		actualizar(mapa,rows,cols,antenas[i]);
 	}
+<<<<<<< HEAD
+	} // Fin rank0
+=======
 	}// rank 0
+>>>>>>> alberto2
 
 	// Debug
 #ifdef DEBUG
