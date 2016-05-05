@@ -114,7 +114,7 @@ void actualizar(int * mapa, int rows, int cols, Antena antena){
 /**
  * Calcular la distancia máxima en el mapa
  */
-int calcular_max(int * mapa, int rows, int cols){
+int calcular_max(int * mapa, int rows, int cols, int size){
 
 	int i,j;
 	int max = 0;
@@ -192,7 +192,7 @@ int main(int nargs, char ** vargs){
 	Antena antena;
 	
 	// 3.1 direcciones de los campos
-	MPI_AINT address_antena;
+	MPI_Aint address_antena;
 	MPI_Aint address_y;
 	MPI_Aint address_x;
 	
@@ -291,7 +291,7 @@ int main(int nargs, char ** vargs){
 	while(1){
 
 		// Calcular el máximo
-		int max = calcular_max(mapa, rows, cols);
+		int max = calcular_max(mapa, rows, cols, size);
 
 		// Salimos si ya hemos cumplido el maximo
 		if ( rank == 0 )
