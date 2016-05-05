@@ -201,8 +201,8 @@ int main(int nargs, char ** vargs){
 	MPI_Get_address(&antena.x, &address_x);
 	
 	// 4.2 Calculo de los desplazamientos
-	MPI_Aint displ_point = address_y - address_antena;
-	MPI_Aint displ_point = address_x - address_y;
+	MPI_Aint displ_y = address_y - address_antena;
+	MPI_Aint displ_x = address_x - address_y;
 
 
 	//
