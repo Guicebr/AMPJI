@@ -116,7 +116,7 @@ void actualizar(int * mapa, int rows, int cols, Antena antena){
  */
 int calcular_max(int * mapa, int rows, int cols){
 
-	int i,j;vi
+	int i,j;
 	int max = 0;
 	int tam = (rows*cols)/(size);
 	
@@ -127,15 +127,17 @@ int calcular_max(int * mapa, int rows, int cols){
 	// reduccion de la matriz en el 0
 	
 	MPI_Reduce(mapa, maximo,tam, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
-	
+	if(rank == 0)
+	{
 	for(i=0; i<rows; i++){
 		
 		if(maximo[i]>max){
 			max = maximo[i];			
 		}
 	} // i
-
+	}
 	return max;
+	
 }
 
 
@@ -292,11 +294,13 @@ int main(int nargs, char ** vargs){
 		int max = calcular_max(mapa, rows, cols);
 
 		// Salimos si ya hemos cumplido el maximo
+		if ( rank == 0 )
+		{
 		if (max <= distMax) break;	
 		
 		// Incrementamos el contador
 		nuevas++;
-		
+		}
 		// Calculo de la nueva antena y actualización del mapa
 		Antena antena = nueva_antena(mapa, rows, cols, max);
 		actualizar(mapa,rows,cols,antena);
