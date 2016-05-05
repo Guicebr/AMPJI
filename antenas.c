@@ -265,7 +265,7 @@ int main(int nargs, char ** vargs){
 	for(i=0; i<nAntenas; i++){
 		actualizar(mapa,rows,cols,antenas[i]);
 	}
-	}
+	} // Fin rank0
 
 	// Debug
 #ifdef DEBUG
