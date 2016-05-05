@@ -202,7 +202,7 @@ int main(int nargs, char ** vargs){
 	
 	// 4.2 Calculo de los desplazamientos
 	MPI_Aint displ_y = address_y - address_antena;
-	MPI_Aint displ_x = address_x - address_y;
+	MPI_Aint displ_x = address_x - address_antena;
 
 
 	//
