@@ -116,17 +116,23 @@ void actualizar(int * mapa, int rows, int cols, Antena antena){
  */
 int calcular_max(int * mapa, int rows, int cols){
 
-	int i,j;
+	int i,j;vi
 	int max = 0;
-
+	int tam = (rows*cols)/(size);
+	
+	// creacion de un array de maximos
+	
+	int * maximo = malloc((size_t) tam * sizeof(int));
+	
+	// reduccion de la matriz en el 0
+	
+	MPI_Reduce(mapa, maximo,tam, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
+	
 	for(i=0; i<rows; i++){
-		for(j=0; j<cols; j++){
-
-			if(m(i,j)>max){
-				max = m(i,j);			
-			}
-
-		} // j
+		
+		if(maximo[i]>max){
+			max = maximo[i];			
+		}
 	} // i
 
 	return max;
@@ -265,7 +271,7 @@ int main(int nargs, char ** vargs){
 	for(i=0; i<nAntenas; i++){
 		actualizar(mapa,rows,cols,antenas[i]);
 	}
-	}
+	}// rank 0
 
 	// Debug
 #ifdef DEBUG
