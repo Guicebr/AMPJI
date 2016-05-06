@@ -288,6 +288,7 @@ int main(int nargs, char ** vargs){
 		if(rank == 0){
 			int particiones = rows;
 			int p;
+			int * mapaaux;
 			for(p=0;p<particiones;p++){
 				
 				//Calculamos la particion
@@ -295,9 +296,8 @@ int main(int nargs, char ** vargs){
 				int p_ini = p*cols/particiones;
 				int p_fin = ((p+1) * cols/particiones)-1;
 				int tam = p_fin - p_ini + 1;
-				
 				// Enviamos la particion
-				MPI_Send(&mapa[p_ini],tam,MPI_INT,p+1,999,MPI_COMM_WORLD);
+				MPI_Send(&mapa[p_ini,p_fin],tam,MPI_INT,p+1,999,MPI_COMM_WORLD);
 
 				// Recibimos el maximo
 				MPI_Recv(&max,1,MPI_INT,0,888,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
