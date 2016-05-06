@@ -25,11 +25,11 @@
 /**
  * Estructura antena
  */
+
 typedef struct {
 	int y;
 	int x;
 } Antena;
-
 
 /**
  * Macro para acceder a las posiciones del mapa
@@ -183,9 +183,6 @@ int main(int nargs, char ** vargs){
 
 	// 3. Creacion del tipo derivado MPI_Antena
 	MPI_Datatype MPI_Antena;
-	MPI_contiguous(2, MPI_INT, &MPI_Antena);
-	MPI_Type_commit(&MPI_Antena);
-	
 	Antena antena;
 	
 	// 3.1 direcciones de los campos
@@ -196,11 +193,6 @@ int main(int nargs, char ** vargs){
 	MPI_Get_address(&antena, &address_antena);
 	MPI_Get_address(&antena.y, &address_y);
 	MPI_Get_address(&antena.x, &address_x);
-	
-	// 4.2 Calculo de los desplazamientos
-	MPI_Aint displ_y = address_y - address_antena;
-	MPI_Aint displ_x = address_x - address_antena;
-
 
 	//
 	// 1. LEER DATOS DE ENTRADA
@@ -208,10 +200,8 @@ int main(int nargs, char ** vargs){
 	
 	int rows,cols,distMax,nAntenas;
 	int * mapa;
-
+	Antena * antenas;
 	// Comprobar número de argumentos
-	if (rank == 0)
-	{
 	if(nargs < 7){
 		fprintf(stderr,"Uso: %s rows cols distMax nAntenas x0 y0 [x1 y1, ...]\n",vargs[0]);
 		return -1;
@@ -228,18 +218,18 @@ int main(int nargs, char ** vargs){
 		return -1;
 	}
 
-
-	// Mensaje
-	printf("Calculando el número de antenas necesarias para cubrir un mapa de"
-		   " (%d x %d)\ncon una distancia máxima no superior a %d "
-		   "y con %d antenas iniciales\n\n",rows,cols,distMax,nAntenas);
+	if(rank == 0){
+		// Mensaje
+		printf("Calculando el número de antenas necesarias para cubrir un mapa de"
+			" (%d x %d)\ncon una distancia máxima no superior a %d "
+		 	"y con %d antenas iniciales\n\n",rows,cols,distMax,nAntenas);
 
 	// Reservar memoria para las antenas
-	Antena * antenas = malloc(sizeof(Antena) * (size_t) nAntenas);
+	antenas = malloc(sizeof(Antena) * (size_t) nAntenas);
 	if(!antenas){
 		fprintf(stderr,"Error al reservar memoria para las antenas inicales\n");
 		return -1;
-	}	
+	}		
 	
 	// Leer antenas
 	int i;
@@ -253,11 +243,12 @@ int main(int nargs, char ** vargs){
 		}
 	}
 
+	}// Fin rank 0
 
 	//
 	// 2. INICIACIÓN
 	//
-	} // rank 0
+
 	// Medir el tiempo
 	double tiempo = cp_Wtime();
 	if(rank == 0)
@@ -275,7 +266,7 @@ int main(int nargs, char ** vargs){
 	for(i=0; i<nAntenas; i++){
 		actualizar(mapa,rows,cols,antenas[i]);
 	}
-	}// rank 0
+	}// Fin rank 0 2
 
 
 	// Debug
@@ -306,7 +297,7 @@ int main(int nargs, char ** vargs){
 				int tam = p_fin - p_ini + 1;
 				
 				// Enviamos la particion
-				MPI_Send(mapa[p_ini],tam,MPI_INT,p+1,999,MPI_COMM_WORLD);
+				MPI_Send(&mapa[p_ini],tam,MPI_INT,p+1,999,MPI_COMM_WORLD);
 
 				// Recibimos el maximo
 				MPI_Recv(&max,1,MPI_INT,0,888,MPI_COMM_WORLD,MPI_STATUS_IGNORE);
@@ -318,6 +309,9 @@ int main(int nargs, char ** vargs){
 			// Incrementamos el contador
 			nuevas++;
 				
+			// Calculo de la nueva antena y actualización del mapa
+			Antena antena = nueva_antena(mapa, rows, cols, max);
+			actualizar(mapa,rows,cols,antena);
 		
 		}else{
 			int * mapa;
@@ -335,9 +329,6 @@ int main(int nargs, char ** vargs){
 			}		
 
 		
-		// Calculo de la nueva antena y actualización del mapa
-		Antena antena = nueva_antena(mapa, rows, cols, max);
-		actualizar(mapa,rows,cols,antena);
 
 	}
 
@@ -356,9 +347,10 @@ int main(int nargs, char ** vargs){
 	// Salida
 	printf("Result: %d\n",nuevas);
 	printf("Time: %f\n",tiempo);
+	
+	MPI_Finalize();
+	return EXIT_SUCCESS ;
 
-	return 0;
 }
-
 
 
